@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Top Up Diamond</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+      overflow: hidden;
+    }
+
+    #preloader {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100%; width: 100%;
+      background: #1f1c2c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .spinner {
+      border: 8px solid rgba(255,255,255,0.2);
+      border-top: 8px solid #fff;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 16px;
+    }
+
+    .diamond-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .diamond-box {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: 0.3s ease;
+    }
+
+    .diamond-box:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .diamond-box.active {
+      border-color: #00ffcc;
+      background: rgba(0, 255, 204, 0.2);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #00c6ff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: #0072ff;
+    }
+
+    .loader {
+      display: none;
+      border: 6px solid rgba(255, 255, 255, 0.3);
+      border-top: 6px solid #fff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    .section {
+      display: none;
+      flex-direction: column;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .section.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .summary {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .qris-img {
+      margin: 20px auto;
+      width: 250px;
+      height: 250px;
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #ccc;
+      margin-top: 10px;
+    }
+
+    a.button-link {
+      text-decoration: none;
+      display: block;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="preloader">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="container section active" id="mainContent">
+    <h2>Top Up Diamond</h2>
+    <input type="text" id="userId" placeholder="Masukkan ID Pengguna" />
+    <div class="diamond-options" id="diamondOptions">
+      <div class="diamond-box" data-value="5 Diamond - Rp1.000">5 Diamond<br><small>Rp1.000</small></div>
+      <div class="diamond-box" data-value="12 diamond - Rp2.500">12 Diamond<br><small>Rp2.500</small></div>
+      <div class="diamond-box" data-value="25 diamond - Rp15.000">25 Diamond<br><small>Rp15.000</small></div>
+      <div class="diamond-box" data-value="50 diamond - Rp17.000">12 Diamond<br><small>Rp2.500</small></div>
+      <div class="diamond-box" data-value="55 diamond - Rp18.000">12 Diamond<br><small>Rp2.500</small></div>
+      <div class="diamond-box" data-value="70 Diamond - Rp19.000">12 Diamond<br><small>Rp2.500</small></div>
+      <div class="diamond-box" data-value="50 Diamond - Rp10.000">50 Diamond<br><small>Rp10.000</small></div>
+      <div class="diamond-box" data-value="100 Diamond - Rp18.000">100 Diamond<br><small>Rp18.000</small></div>
+    </div>
+    <button onclick="submitTopUp()">Top Up Sekarang</button>
+    <div class="loader" id="loader"></div>
+  </div>
+
+  <div class="container section" id="paymentPage">
+    <h2>Konfirmasi Pembayaran</h2>
+    <div class="summary" id="orderSummary">Memuat data...</div>
+    <button onclick="showQRIS()">Bayar Sekarang</button>
+  </div>
+
+  <div class="container section" id="qrisPage">
+    <h2>Pembayaran QRIS</h2>
+    <p>Silakan scan QR Code di bawah ini menggunakan aplikasi pembayaran (DANA, OVO, GoPay, dll).</p>
+    <img class="qris-img" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=ContohPembayaranQRIS" alt="QRIS Code">
+    <p class="note">Setelah pembayaran berhasil, klik tombol di bawah.</p>
+    <a class="button-link" id="whatsappLink" target="_blank">
+      <button>Kirim Bukti Pembayaran via WhatsApp</button>
+    </a>
+  </div>
+
+  <div class="container section" id="successPage">
+    <h2>✅ Pembayaran Berhasil</h2>
+    <p>Terima kasih. Diamond akan segera dikirim ke akun Anda.</p>
+  </div>
+
+  <script>
+    window.onload = function () {
+      const preloader = document.getElementById("preloader");
+      setTimeout(() => {
+        preloader.style.opacity = "0";
+        preloader.style.display = "none";
+      }, 1000);
+    };
+
+    let selectedPackage = null;
+
+    document.querySelectorAll(".diamond-box").forEach(box => {
+      box.addEventListener("click", function () {
+        document.querySelectorAll(".diamond-box").forEach(b => b.classList.remove("active"));
+        this.classList.add("active");
+        selectedPackage = this.getAttribute("data-value");
+      });
+    });
+
+    function submitTopUp() {
+      const userId = document.getElementById("userId").value;
+      const loader = document.getElementById("loader");
+
+      if (!userId || !selectedPackage) {
+        alert("Silakan isi ID dan pilih paket diamond.");
+        return;
+      }
+
+      loader.style.display = "block";
+
+      setTimeout(() => {
+        loader.style.display = "none";
+        showSection("paymentPage");
+
+        document.getElementById("orderSummary").innerHTML = `
+          <p><strong>ID Pengguna:</strong> ${userId}</p>
+          <p><strong>Paket Diamond:</strong> ${selectedPackage}</p>
+        `;
+      }, 1000);
+    }
+
+    function showQRIS() {
+      showSection("qrisPage");
+
+      const userId = document.getElementById("userId").value;
+      const waktu = new Date().toLocaleString("id-ID");
+      const nomorWa = "6283812556153"; // GANTI ke nomor admin
+
+      const pesan = `Halo Admin,%0ASaya telah melakukan top up dengan detail berikut:%0A%0A` +
+                    `Jumlah: ${selectedPackage}%0A` +
+                    `ID Game: ${userId}%0A` +
+                    `Waktu: ${waktu}%0A%0AMohon diproses ya kak. Terima kasih!`;
+
+      const url = `https://wa.me/${nomorWa}?text=${pesan}`;
+      document.getElementById("whatsappLink").href = url;
+    }
+
+    function showSection(id) {
+      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+  </script>
+
+</body>
+</html>
